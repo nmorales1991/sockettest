@@ -4,23 +4,15 @@ import Mensajes from "../components/Mensajes";
 import {withRouter} from 'react-router-dom'
 
 const Chat = (props) => {
-  const socket = io("http://192.168.0.7:3000");
-  console.log(socket)
+  
+  
   const [mensaje, setmensaje] = useState("");
   const [chat, setchat] = useState([]);
+  const socket = io("http://192.168.0.5:3001");
 
-  useEffect(()=>{
-    socket.on('connect', function() {
-      console.log('Socket connected!');
-      let code = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5)
-      console.log(code)
-      socket.emit('join',{code: code});
-    });
-    
-  },[])
-  /*useEffect(() => {
-    console.log("useeffect")
+  useEffect(() => {
     socket.on("enviarMensaje", data => {
+      console.log(data)
       setchat([...chat, data]);
     });
     return () => {
@@ -28,17 +20,16 @@ const Chat = (props) => {
 
       socket.off();
     };
-  }, [chat]);*/
+  }, [chat]);
 
   const enviarMensaje = e => {
     e.preventDefault();
-    /*const data = {
+    const data = {
       usuario: props.location.state.usuario,
       mensaje
-    };*/
+    };
 
-    //socket.emit("enviarMensaje", data);
-    socket.emit("sync")
+    socket.emit("enviarMensaje", data);
     setmensaje("");
   };
   return (
@@ -56,12 +47,6 @@ const Chat = (props) => {
           value={mensaje}
           placeholder="Escriba su mensaje"
         />
-        <input type="submit" value="Enviar" />
-        <input type="button" value="Arriba" onClick={()=>socket.emit('up')}/>
-        <input type="button" value="Abajo" onClick={()=>socket.emit('down')}/>
-        <input type="button" value="Izquierda" onClick={()=>socket.emit('left')}/>
-        <input type="button" value="Derecha" onClick={()=>socket.emit('right')}/>
-        <input type="button" value="Terminar" onClick={()=>socket.emit('end')}/>
       </form>
     </div>
   );
